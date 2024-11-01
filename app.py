@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 
-MODEL_PATH = 'C:/PyCharmProjects/RiceDisease1/model/model.h5'
+MODEL_PATH = 'model/model.h5'
 model = load_model(MODEL_PATH)
 
 UPLOAD_FOLDER = 'static/uploads'
