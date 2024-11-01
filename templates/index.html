@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Disease Classification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #27ae60;
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        input[type="file"] {
+            border: 2px solid #27ae60;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        .preview {
+            margin: 20px auto;
+            max-width: 300px;
+            max-height: 300px;
+            text-align: center;
+        }
+
+        .preview img {
+            max-width: 100%;
+            max-height: 300px;
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .result h2 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .result img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Container for the sections */
+        .info-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Style for the info-section */
+        .info-section,
+        .guidance-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto 20px;
+            text-align: left;
+        }
+
+        .info-section h2,
+        .guidance-section h2 {
+            font-size: 18px;
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .info-list li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .info-list span.name {
+            text-align: left;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .info-list span.regno {
+            text-align: right;
+            color: #2c3e50;
+        }
+
+        /* Add the aligned headings */
+        .info-headers {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .info-headers .name-header {
+            text-align: left;
+            font-weight: bold;
+            color: green; /* Green color for Name heading */
+        }
+
+        .info-headers .regno-header {
+            text-align: right;
+            font-weight: bold;
+            color: green; /* Green color for Registration No. heading */
+        }
+
+        /* Center align the Team Members heading */
+        .info-section h2 {
+            text-align: center;
+        }
+
+        /* Style for the guidance-section */
+        .guidance-section h2 {
+            font-size: 18px;
+            color: #e67e22;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .guidance-text {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Style for language selector */
+        .language-selector {
+            margin: 20px 0;
+        }
+
+        .language-selector label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .language-selector select {
+            font-size: 16px;
+            padding: 5px;
+            border: 2px solid #27ae60;
+            border-radius: 5px;
+        }
+
+        /* Style for the clear button */
+        .clear-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rice Disease Classification</h1>
+
+    <button class="clear-button" onclick="resetApp()">Clear</button>
+    <form method="POST" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept="image/*" onchange="previewImage(event)" required>
+        <br><br>
+
+        <div class="language-selector">
+            <label for="language">Select Language:</label>
+            <select id="language" name="language">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="bn">Bengali</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+                <option value="kn">Kannada</option>
+                <option value="mr">Marathi</option>
+                <option value="gu">Gujarati</option>
+                <option value="ml">Malayalam</option>
+                <option value="or">Odia</option>
+                <option value="pa">Punjabi</option>
+            </select>
+        </div>
+        <div class="preview" id="imagePreview" style="display: none;">
+            <h3>Selected Image:</h3>
+            <img id="previewImg" src="" alt="Image Preview">
+        </div>
+
+        <br>
+        <button type="submit">Classify Image</button>
+    </form>
+    {% if result %}
+    <div class="result">
+        <h2 id="classificationText"></h2>
+        <h3>Uploaded Image:</h3>
+        <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Image">
+        <br>
+        <audio controls>
+            <source src="{{ url_for('uploaded_file', filename=audio_file) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <script>
+        // Function to display result one letter at a time
+        function typeEffect(text, elementId, speed) {
+            var i = 0;
+            function typing() {
+                if (i < text.length) {
+                    document.getElementById(elementId).innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Call the typing effect when result is available
+        var resultText = "{{ result }}"; // Pass the result text from Flask
+        typeEffect(resultText, 'classificationText', 100); // Adjust speed as necessary
+    </script>
+    {% endif %}
+
+    <div class="info-container">
+        <div class="info-section">
+            <h2>Team Members</h2>
+            <div class="info-headers">
+                <span class="name-header">Name</span>
+                <span class="regno-header">Registration No.</span>
+            </div>
+            <ul class="info-list">
+                <li><span class="name">Suraj Kumar Sahoo</span> <span class="regno">2101230074</span></li>
+                <li><span class="name">Omkar Mohanta</span> <span class="regno">2101230045</span></li>
+                <li><span class="name">Nandini Behera</span> <span class="regno">2101230043</span></li>
+                <li><span class="name">Pradipta Priyadarshini Beura</span> <span class="regno">2101230047</span></li>
+                <li><span class="name">Ashutosh Behera</span> <span class="regno">2301230021</span></li>
+            </ul>
+        </div>
+        
+        <div class="guidance-section">
+            <h2>Under the guidance of</h2>
+            <p class="guidance-text"><strong>Prof. Subhashree Abinash <br> Prof. Ipsita Panda</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Preview the image before uploading
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('imagePreview');
+                const img = document.getElementById('previewImg');
+                img.src = reader.result;
+                preview.style.display = 'block'; // Show the preview div
+            }
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Function to reset the app
+        function resetApp() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('previewImg').src = '';
+            document.getElementById('classificationText').innerHTML = '';
+            document.querySelector('.result').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
